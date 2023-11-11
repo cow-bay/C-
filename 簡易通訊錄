@@ -1,0 +1,329 @@
+#include<iostream>
+#include<string>
+#define MAX 500
+using namespace std;
+
+struct Person
+{
+	string name;
+	int m_Sex; // 1是男 2是女
+	int m_Age;
+	string m_Phone;  //電話號碼 用int內存不夠會太大
+	string m_Addr;
+	string m_Name;
+};
+
+struct Addressbooks
+{
+	struct Person personArray[MAX]; //通訊錄保存的陣列
+	int m_size = 0; //紀錄當前通訊錄聯絡人個數
+};
+
+void addPerson(Addressbooks * abs)
+{
+	if (abs->m_size == MAX)  //第一點、判斷通訊錄內有沒有滿	
+	{
+		cout << "通訊錄已滿，無法添加新聯絡人。" << endl;
+		return;
+	}
+	else
+	{
+		//添加聯絡人
+		string name;
+		cout << "請輸入姓名: " << endl;
+		cin >> name;
+		abs->personArray[abs->m_size].m_Name = name;
+
+		cout << "請輸入性別 : " << endl;
+		cout << "1 --- 男 " << endl;
+		cout << "2 --- 女 " << endl;
+		int sex = 0;
+
+		while (true)
+		{
+			cin >> sex;
+			if (sex == 1 || sex == 2)
+			{
+				abs->personArray[abs->m_size].m_Sex = sex;
+				break;
+			}
+			cout << "輸入有錯誤，請重新輸入" << endl;
+		}   
+
+		//年齡
+		cout << "請輸入年齡 : " << endl;
+		int age = 0;
+		cin >> age;
+		abs->personArray[abs->m_size].m_Age = age;
+
+		//電話
+		cout << "請輸入電話 : " << endl;
+		string phone;
+		cin >> phone;
+		abs->personArray[abs->m_size].m_Phone = phone;
+
+		//地址
+		cout << "請輸入您的住家地址 : " << endl;
+		string address;
+		cin >> address;
+		abs->personArray[abs->m_size].m_Addr = address;
+
+		//更新通訊錄裡面人數
+		abs->m_size++;
+		cout << "添加成功" << endl;
+
+		system("pause");
+		system("cls");
+	}
+}
+
+void showPerson(Addressbooks * abs)
+{
+	//判斷通訊錄裡面人數、為0 輸出尚無聯絡人、不為0 輸出聯絡人資訊
+	if (abs->m_size == 0)
+	{
+		cout << "目前尚無聯絡人" << endl;
+	}
+	else
+	{
+		for (int i = 0;i < abs->m_size;i++) {
+			cout << "姓名 : " << abs->personArray[i].m_Name << "\t";
+			cout << "性別 : " << (abs->personArray[i].m_Sex == 1 ? "男" : "女") << "\t";
+			cout << "年齡 : " << abs->personArray[i].m_Age << "\t";
+			cout << "電話 : " << abs->personArray[i].m_Phone << "\t";
+			cout << "地址 : " << abs->personArray[i].m_Addr << endl;
+		}
+	}
+	system("pause");
+	system("cls");
+}
+
+//檢查聯絡人是否存在
+int isExist(Addressbooks* abs, string name) //函數1:通訊錄 函數2:對比姓名
+{
+	for (int i = 0;i < abs->m_size;i++)
+	{
+		if (abs->personArray[i].m_Name == name)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+void deletePerson(Addressbooks* abs)
+{
+	cout << "請輸入你要刪除的聯絡人 : " << endl;
+	string name;
+	cin >> name;
+	int res = isExist(abs, name); //這裡的abs是傳遞指標地址位置 不用再加&
+
+	//不等於-1就是通訊錄內有此人
+	if (res != -1) 
+	{
+		for (int i = res;i < abs->m_size;i++) {
+			abs->personArray[i] = abs->personArray[i + 1];  //把沒被刪除的人資料往前移
+		}
+		abs->m_size--;
+		cout << "刪除成功" << endl;
+	}
+	else 
+	{
+		cout << "查無此人" << endl;
+	}
+	system("pause");
+	system("cls");
+}
+
+void findPerson(Addressbooks* abs)
+{
+	cout << "選擇你要查尋的聯絡人姓名 : " << endl;
+	string name;
+	cin >> name;
+
+	int res = isExist(abs, name);
+	if (res != -1)
+	{
+		cout << "姓名 : " << abs->personArray[res].m_Name << "\t";
+		cout << "性別 : " << (abs->personArray[res].m_Sex == 1 ? "男" : "女") << "\t";
+		cout << "年齡 : " << abs->personArray[res].m_Age << "\t";
+		cout << "電話 : " << abs->personArray[res].m_Phone << "\t";
+		cout << "地址 : " << abs->personArray[res].m_Addr << endl;
+	}
+	else
+	{
+		cout << "查無此人" << endl;
+	}
+	system("pause");
+	system("cls");
+}
+
+void modifyPerson(Addressbooks * abs)
+{
+	cout << "請輸入要修改的聯絡人" << endl;
+	string name;
+	cin >> name;
+
+	int res = isExist(abs, name);
+
+	if(res != -1) //找到聯絡人
+	{
+		int select = 0;
+		
+		while (true)
+		{
+			cout << "請輸入您要修改的資料數字 : " << endl;
+			cout << "1、姓名   2、性別   3、年齡   4、電話   5、地址   0、目錄"  << endl;
+			cin >> select;
+
+			switch (select)
+			{
+			case 1:
+			{
+			cout << "請輸入修改姓名 : " << endl;
+			string name;
+			cin >> name;
+			abs->personArray[res].m_Name = name;
+			break;
+			}
+			case 2:
+			{
+				cout << "請輸入修改性別 : " << endl;
+				cout << "1---男" << endl;
+				cout << "2---女" << endl; 
+				int sex = 0;
+				
+				while (true)
+				{
+					cin >> sex;
+					if (sex == 1 || sex == 2)
+					{
+						abs->personArray[res].m_Sex = sex;
+						break;
+					}
+					else
+					{
+						cout << "請輸入數字1或者是2" << endl;
+					}
+				}
+				break;
+			}
+			case 3:
+			{
+				cout << "請輸入修改年齡 : " << endl;
+				int age = 0;
+				cin >> age;
+				abs->personArray[res].m_Age = age;
+				break;
+			}
+			case 4:
+			{
+				cout << "請輸入修改後的電話號碼 : " << endl;
+				string phone;
+				cin >> phone;
+				abs->personArray[res].m_Phone = phone;
+				break;
+			}
+			case 5:
+			{
+				cout << "請輸入您的住家地址 : " << endl;
+				string address;
+				cin >> address;
+				abs->personArray[res].m_Addr = address;
+				break;
+			}
+			case 0:
+				system("cls");
+				return;
+				break;
+			default:
+				cout << "輸入錯誤，請重新輸入" << endl;
+				system("pause");
+				break;
+			}
+		}
+	}
+	else
+	{
+		cout << "查無此人" << endl;
+	}
+	system("pause");
+	system("cls");
+}
+
+void cleanPerson(Addressbooks* abs)
+{
+	int i = 0;
+	cout << "確定要清空聯絡人嗎? 是的話請按1" << endl;
+	cin >> i;
+	if (i == 1)
+	{
+		abs->m_size = 0;
+		cout << "通訊錄已清空" << endl;
+	}
+	else 
+	{
+		return;
+	}
+	system("pause");
+	system("cls");
+}
+
+void showMenu()
+{
+	cout << "*************************" << endl;
+	cout << "***** 1、添加聯絡人 *****" << endl;
+	cout << "***** 2、顯示聯絡人 *****" << endl;
+	cout << "***** 3、刪除聯絡人 *****" << endl;
+	cout << "***** 4、搜尋聯絡人 *****" << endl;
+	cout << "***** 5、修改聯絡人 *****" << endl;
+	cout << "***** 6、清空聯絡人 *****" << endl;
+	cout << "***** 0、退出通訊錄 *****" << endl;
+	cout << "*************************" << endl;
+}
+
+int main()
+{
+	Addressbooks abs;
+	abs.m_size = 0;
+	
+	int select = 0; //建立用戶選擇輸入的值
+	
+					
+	while (true)
+	{
+		showMenu();
+		
+		cout << "請選擇你需要的服務項目數字 : ";
+		cin >> select;
+		switch (select)
+		{
+		case 1:
+			addPerson(&abs);
+			break;
+		case 2:
+			showPerson(&abs);
+			break;
+		case 3:
+			deletePerson(&abs);
+			break;
+		case 4:
+			findPerson(&abs);
+			break;
+		case 5:
+			modifyPerson(&abs);
+			break;
+		case 6:
+			cleanPerson(&abs);
+			break;
+		case 0:
+			cout << "歡迎下次使用" << endl;
+			system("pause");
+			return 0;
+			break;
+		default:
+			break;
+		}
+	}
+
+}
